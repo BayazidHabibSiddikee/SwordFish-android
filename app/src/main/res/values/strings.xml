@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Swordfish</string>
+    <string name="search_or_enter_url">Search or enter URL</string>
+    <string name="blocker_enabled">Swordfish Shield Active</string>
+    <string name="blocker_disabled">Shield Paused</string>
+    <string name="focus_mode_active">Focus Mode Active</string>
+</resources>

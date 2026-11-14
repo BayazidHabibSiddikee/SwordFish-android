@@ -1,0 +1,6 @@
+{
+  "name": "Swordfish",
+  "description": "Swordfish: Fast Ubuntu-themed web browser with advanced JavaScript adblocking, YouTube ad blocker, and built-in app distraction blocker.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
