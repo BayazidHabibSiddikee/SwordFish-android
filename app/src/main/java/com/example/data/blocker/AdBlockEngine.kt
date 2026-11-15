@@ -78,6 +78,26 @@ object AdBlockEngine {
         "exponential.com"
     )
 
+    // Adult / pornography domains blocked at network level (gated by adultContentBlocking)
+    private val PORN_DOMAINS = hashSetOf(
+        "pornhub.com", "xvideos.com", "xnxx.com", "xhamster.com", "redtube.com",
+        "youporn.com", "tube8.com", "spankbang.com", "chaturbate.com", "livejasmin.com",
+        "brazzers.com", "realitykings.com", "naughtyamerica.com", "bangbros.com",
+        "twistys.com", "digitalplayground.com", "21sextury.com", "mofos.com",
+        "faketaxi.com", "realitykings.com", "girlsdoporn.com", "blacked.com",
+        "vixen.com", "tushy.com", "slayed.com", "deeper.com", "girlsway.com",
+        "onlyfans.com", "manyvids.com", "clips4sale.com", "streamate.com",
+        "imlive.com", "camsoda.com", "bongacams.com", "stripchat.com",
+        "xvideos2.com", "xvideos3.com", "redtube.porn", "youporn.porn"
+    )
+
+    // Adult-content URL path / keyword heuristics
+    private val PORN_KEYWORDS = listOf(
+        "/porn/", "/xxx/", "/sex/", "/adult/", "/nsfw/", "/erotic/",
+        "tube8", "redtube", "youporn", "xhamster", "xnxx", "pornhub",
+        "onlyfans", "manyvids", "chaturbate", "livejasmin"
+    )
+
     private val AD_KEYWORDS = listOf(
         "/pagead/",
         "/ads/banner",
@@ -321,6 +341,33 @@ object AdBlockEngine {
             }
         }
 
+        // Adult / pornography domain blocking (gated by adultContentBlocking filter)
+        val adultFilterActive = filterSettings?.adBlock?.adultContentBlocking ?: true
+        if (adultFilterActive) {
+            // Suffix domain matching against known adult domains
+            for (pornDomain in PORN_DOMAINS) {
+                if (host == pornDomain || host.endsWith(".$pornDomain")) {
+                    return true
+                }
+            }
+            // Keyword / path heuristics for adult content
+            for (keyword in PORN_KEYWORDS) {
+                if (path.contains(keyword) || host.contains(keyword) || fullUrl.contains(keyword)) {
+                    return true
+                }
+            }
+        }
+
+        return false
+    }
+
+    /** Returns true if the given host is a known adult / pornography domain. */
+    fun isPornDomain(host: String?): Boolean {
+        if (host.isNullOrBlank()) return false
+        val h = host.lowercase()
+        for (pornDomain in PORN_DOMAINS) {
+            if (h == pornDomain || h.endsWith(".$pornDomain")) return true
+        }
         return false
     }
 

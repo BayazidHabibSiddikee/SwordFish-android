@@ -12,7 +12,8 @@ data class AdBlockFilters(
     val youtubeAdBlocking: Boolean = true,
     val popupBlocking: Boolean = true,
     val antiAdblockNeutralizer: Boolean = true,
-    val socialFloatingWidgets: Boolean = true
+    val socialFloatingWidgets: Boolean = true,
+    val adultContentBlocking: Boolean = true
 ) {
     fun toJson(): JSONObject = JSONObject().apply {
         put("networkAdInterception", networkAdInterception)
@@ -21,6 +22,7 @@ data class AdBlockFilters(
         put("popupBlocking", popupBlocking)
         put("antiAdblockNeutralizer", antiAdblockNeutralizer)
         put("socialFloatingWidgets", socialFloatingWidgets)
+        put("adultContentBlocking", adultContentBlocking)
     }
 
     fun activeCount(): Int = listOf(
@@ -29,7 +31,8 @@ data class AdBlockFilters(
         youtubeAdBlocking,
         popupBlocking,
         antiAdblockNeutralizer,
-        socialFloatingWidgets
+        socialFloatingWidgets,
+        adultContentBlocking
     ).count { it }
 
     companion object {
@@ -39,7 +42,8 @@ data class AdBlockFilters(
             youtubeAdBlocking = json.optBoolean("youtubeAdBlocking", true),
             popupBlocking = json.optBoolean("popupBlocking", true),
             antiAdblockNeutralizer = json.optBoolean("antiAdblockNeutralizer", true),
-            socialFloatingWidgets = json.optBoolean("socialFloatingWidgets", true)
+            socialFloatingWidgets = json.optBoolean("socialFloatingWidgets", true),
+            adultContentBlocking = json.optBoolean("adultContentBlocking", true)
         )
     }
 }
@@ -222,7 +226,8 @@ data class FilterSettings(
                     youtubeAdBlocking = true,
                     popupBlocking = true,
                     antiAdblockNeutralizer = true,
-                    socialFloatingWidgets = true
+                    socialFloatingWidgets = true,
+                    adultContentBlocking = true
                 ),
                 tracking = TrackingFilters(
                     analyticsTelemetryBlocking = true,
@@ -257,7 +262,8 @@ data class FilterSettings(
                     youtubeAdBlocking = true,
                     popupBlocking = true,
                     antiAdblockNeutralizer = true,
-                    socialFloatingWidgets = true
+                    socialFloatingWidgets = true,
+                    adultContentBlocking = true
                 ),
                 tracking = TrackingFilters(
                     analyticsTelemetryBlocking = true,
@@ -292,7 +298,8 @@ data class FilterSettings(
                     youtubeAdBlocking = true,
                     popupBlocking = true,
                     antiAdblockNeutralizer = false,
-                    socialFloatingWidgets = false
+                    socialFloatingWidgets = false,
+                    adultContentBlocking = false
                 ),
                 tracking = TrackingFilters(
                     analyticsTelemetryBlocking = true,

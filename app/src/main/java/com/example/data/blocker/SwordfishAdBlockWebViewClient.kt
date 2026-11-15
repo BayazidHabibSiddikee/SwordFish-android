@@ -279,6 +279,62 @@ open class SwordfishAdBlockWebViewClient(
     private fun handleUrlOverride(view: WebView?, url: String): Boolean {
         val filters = getFilterSettings()
 
+        // ── Link-click / redirect ad blocker ──
+        // When the user taps a link, intercept navigation to ad / porn / redirect-trap URLs
+        // before the WebView loads them ("this link takes me to another ad page").
+        val uri = try { Uri.parse(url) } catch (_: Exception) { null }
+        if (uri != null && (url.startsWith("http://") || url.startsWith("https://"))) {
+            val filtersForLink = filters
+
+            // 1. Porn / adult content (gated by adultContentBlocking)
+            if (filtersForLink?.adBlock?.adultContentBlocking != false &&
+                AdBlockEngine.isPornDomain(uri.host)) {
+                onBlocked(uri, false, true)
+                view?.post {
+                    android.widget.Toast.makeText(
+                        view.context,
+                        "🛑 Swordfish Shield: Blocked adult content",
+                        android.widget.Toast.LENGTH_SHORT
+                    ).show()
+                }
+                return true
+            }
+
+            // 2. Ad network / redirect-trap domains (pop-ads that open on link click)
+            if (filtersForLink?.adBlock?.networkAdInterception != false &&
+                AdBlockEngine.isAdOrTracker(uri, filtersForLink)) {
+                onBlocked(uri, false, false)
+                view?.post {
+                    android.widget.Toast.makeText(
+                        view.context,
+                        "🛑 Swordfish Shield: Blocked ad redirect",
+                        android.widget.Toast.LENGTH_SHORT
+                    ).show()
+                }
+                return true
+            }
+
+            // 3. Redirect-trap URL heuristics (common ad-redirect path patterns)
+            val lowerUrl = url.lowercase()
+            val redirectAdKeywords = listOf(
+                "/click/", "/redirect/", "/goto/", "/out/", "/goto.php", "/adclick/",
+                "/adredirect/", "/track/", "/tracking/", "/adserver/", "/interstitial/",
+                "/popunder/", "/popad/", "adf.ly", "bit.ly", "t.co", "ouo.io", "shorte.st",
+                "adfly", "adfoc.us", "linkshrink", "tinyurl"
+            )
+            if (redirectAdKeywords.any { lowerUrl.contains(it) }) {
+                onBlocked(uri, false, false)
+                view?.post {
+                    android.widget.Toast.makeText(
+                        view.context,
+                        "🛑 Swordfish Shield: Blocked ad redirect trap",
+                        android.widget.Toast.LENGTH_SHORT
+                    ).show()
+                }
+                return true
+            }
+        }
+
         // Security Systems: Malicious Site Shield
         if (filters?.security?.maliciousSiteShield == true) {
             val (isMalicious, reason) = com.example.data.security.SecurityEngine.checkMalicious(url)
