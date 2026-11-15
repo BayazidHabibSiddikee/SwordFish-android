@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
         CachedPageEntity::class
     ],
     version = 6,
-    exportSchema = false
+    exportSchema = true
 )
 abstract class BrowserDatabase : RoomDatabase() {
     abstract fun browserDao(): BrowserDao
