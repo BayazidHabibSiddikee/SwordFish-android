@@ -7,8 +7,10 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import android.os.IBinder
+import android.os.PowerManager
 import androidx.core.app.NotificationCompat
 import com.example.MainActivity
 import com.example.data.BrowserRepository
@@ -33,12 +35,27 @@ class FocusUsageMonitorService : Service() {
     private val serviceJob = Job()
     private val serviceScope = CoroutineScope(Dispatchers.IO + serviceJob)
     private lateinit var repository: BrowserRepository
+    private lateinit var wakeLock: PowerManager.WakeLock
 
     override fun onCreate() {
         super.onCreate()
         val database = BrowserDatabase.getInstance(applicationContext)
         repository = BrowserRepository(database.browserDao())
         createNotificationChannel()
+        acquireWakeLock()
+    }
+
+    private fun acquireWakeLock() {
+        val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
+        wakeLock = pm.newWakeLock(
+            PowerManager.PARTIAL_WAKE_LOCK,
+            "SwordfishFocusMonitor:WakeLock"
+        )
+        wakeLock.acquire(10 * 60 * 1000) // hold for up to 10 minutes; re-acquired each loop iteration
+    }
+
+    private fun releaseWakeLock() {
+        wakeLock.takeIf { it.isHeld }?.release()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -63,6 +80,8 @@ class FocusUsageMonitorService : Service() {
         serviceScope.launch {
             var remainingSeconds = focusMinutes * 60
             while (isActive && _isServiceRunning.value) {
+                // Keep the CPU awake while monitoring so background tracking doesn't pause
+                if (!wakeLock.isHeld) acquireWakeLock()
                 delay(1000)
 
                 // Update session time
@@ -91,6 +110,7 @@ class FocusUsageMonitorService : Service() {
         _isServiceRunning.value = false
         _currentActiveTarget.value = null
         serviceJob.cancel()
+        releaseWakeLock()
     }
 
     override fun onDestroy() {
@@ -187,6 +207,17 @@ class FocusUsageMonitorService : Service() {
 
         fun setActiveTarget(target: String?) {
             _currentActiveTarget.value = target
+        }
+    }
+
+    /**
+     * Restarts focus monitoring after the device reboots so background tracking is continuous.
+     */
+    class FocusBootReceiver : android.content.BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
+                FocusUsageMonitorService.start(context, 25)
+            }
         }
     }
 }
