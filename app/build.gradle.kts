@@ -68,8 +68,12 @@ android {
       isIncludeAndroidResources = true
       all {
         it.systemProperty(
+          "robolectric.usePreinstrumentedJars",
+          "true"
+        )
+        it.systemProperty(
           "robolectric.dependency.dir",
-          "/home/appuser/.m2/repository/org/robolectric/android-all-instrumented/16-robolectric-13921718-i7"
+          "/home/sword/.m2/repository/org/robolectric/android-all-instrumented/15-robolectric-13954326-i7"
         )
       }
     }
