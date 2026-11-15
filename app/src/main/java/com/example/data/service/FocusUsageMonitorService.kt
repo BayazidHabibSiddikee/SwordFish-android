@@ -71,10 +71,10 @@ class FocusUsageMonitorService : Service() {
                     remainingSeconds--
                 }
 
-                // If a blacklisted target is currently being used, record active usage in Room
+                // If a blacklisted target is currently being used, record active usage in Room (batched every 5s)
                 val currentTarget = _currentActiveTarget.value
-                if (!currentTarget.isNullOrBlank()) {
-                    repository.recordActiveUsage(currentTarget, 1)
+                if (!currentTarget.isNullOrBlank() && _currentSessionActiveSeconds.value % 5 == 0L) {
+                    repository.recordActiveUsage(currentTarget, 5)
                 }
 
                 // Update notification text periodically
