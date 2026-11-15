@@ -320,7 +320,13 @@ open class SwordfishAdBlockWebViewClient(
                 "/click/", "/redirect/", "/goto/", "/out/", "/goto.php", "/adclick/",
                 "/adredirect/", "/track/", "/tracking/", "/adserver/", "/interstitial/",
                 "/popunder/", "/popad/", "adf.ly", "bit.ly", "t.co", "ouo.io", "shorte.st",
-                "adfly", "adfoc.us", "linkshrink", "tinyurl"
+                "adfly", "adfoc.us", "linkshrink", "tinyurl", "clk.im", "adshort", "shrtco.de",
+                "cutt.ly", "tiny.cc", "rebrand.ly", "goo.gl", "ow.ly", "buff.ly", "is.gd",
+                "v.gd", "soo.gd", "po.st", "trib.al", "url.sh", "clickmeter.com", "go2.cloud",
+                "adcash.com", "adf.ly", "adfly", "adflylink.com", "popads.net", "popcash.net",
+                "popunder", "popunderjs", "popunder-popup", "interstitial-ad", "interstitial",
+                "linkbucks", "linkbucks.com", "adlinkfly", "safelink", "safelinkconverter",
+                "adsfly", "ouo.io", "ouo", "bolt.sh", "shrinkme.io", "ad4m.org"
             )
             if (redirectAdKeywords.any { lowerUrl.contains(it) }) {
                 onBlocked(uri, false, false)

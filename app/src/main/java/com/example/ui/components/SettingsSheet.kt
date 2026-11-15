@@ -246,6 +246,16 @@ fun SettingsSheet(
                 testTag = "switch_social_floating_widgets",
                 onToggle = { viewModel.updateAdFilters { f -> f.copy(socialFloatingWidgets = it) } }
             ),
+            FilterItemData(
+                id = "adult_content",
+                category = "Ad-Blocking",
+                title = "Adult / Pornography Content Blocker",
+                description = "Blocks known adult/pornography domains at network level. Does not block non-explicit sites. Toggle OFF to allow adult sites.",
+                icon = Icons.Default.Block,
+                isEnabled = filterSettings.adBlock.adultContentBlocking,
+                testTag = "switch_adult_content_blocking",
+                onToggle = { viewModel.updateAdFilters { f -> f.copy(adultContentBlocking = it) } }
+            ),
 
             // --- Section 2: Security Systems & Ratings Filters (6) ---
             FilterItemData(
