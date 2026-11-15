@@ -116,6 +116,8 @@ dependencies {
   implementation(libs.androidx.room.ktx)
   implementation(libs.androidx.room.runtime)
   implementation(libs.androidx.security.crypto)
+   implementation("androidx.biometric:biometric:1.1.0")
+   implementation("androidx.fragment:fragment-ktx:1.8.5")
   implementation(libs.coil.compose)
   implementation(libs.converter.moshi)
   implementation(libs.firebase.ai)
